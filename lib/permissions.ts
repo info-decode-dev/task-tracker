@@ -9,7 +9,7 @@ export type SectionLike = Pick<Section, "created_by" | "locked">;
 export type TaskLike = TaskWithAssignee & { section?: SectionLike };
 
 function isAdmin(ctx: PermissionCtx): boolean {
-  return "isAdmin" in ctx ? ctx.isAdmin : ctx.role === "admin";
+  return ctx.isAdmin;
 }
 
 function userId(ctx: PermissionCtx): string {

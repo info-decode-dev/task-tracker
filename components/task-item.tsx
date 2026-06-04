@@ -26,7 +26,7 @@ import { Pencil, Trash2, User } from "lucide-react";
 
 type TaskItemProps = {
   task: TaskWithAssignee;
-  section: Pick<Section, "created_by">;
+  section: Pick<Section, "created_by" | "locked">;
   assignees: AssigneeOption[];
   permissions: WorkspaceClientProps["permissions"];
 };
