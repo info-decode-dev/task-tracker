@@ -5,6 +5,7 @@ import { SignUpForm } from "@/components/sign-up-form";
 export default function SignUpPage() {
   return (
     <AuthShell
+      showWedvueBadge
       title="Create your account"
       description="Start tracking tasks in organized sections."
     >

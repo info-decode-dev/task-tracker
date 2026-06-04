@@ -63,6 +63,30 @@ export interface Database {
         };
         Relationships: [];
       };
+      workspace_niches: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          message: string;
+          position: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          message: string;
+          position?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          message?: string;
+          position?: number;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       sections: {
         Row: {
           id: string;
@@ -72,6 +96,7 @@ export interface Database {
           title: string;
           color: string;
           locked: boolean;
+          priority: boolean;
           position: number;
           created_at: string;
         };
@@ -83,6 +108,7 @@ export interface Database {
           title: string;
           color?: string;
           locked?: boolean;
+          priority?: boolean;
           position?: number;
           created_at?: string;
         };
@@ -94,6 +120,7 @@ export interface Database {
           title?: string;
           color?: string;
           locked?: boolean;
+          priority?: boolean;
           position?: number;
           created_at?: string;
         };

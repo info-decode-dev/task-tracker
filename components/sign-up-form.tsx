@@ -17,6 +17,7 @@ export function SignUpForm() {
   const searchParams = useSearchParams();
   const nextPath = sanitizeNextPath(searchParams.get("next"));
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
@@ -26,6 +27,12 @@ export function SignUpForm() {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      setError("Name is required.");
+      return;
+    }
 
     if (password.length < 6) {
       setError("Password must be at least 6 characters.");
@@ -46,6 +53,7 @@ export function SignUpForm() {
         email,
         password,
         options: {
+          data: { display_name: trimmedName },
           emailRedirectTo: `${window.location.origin}${AUTH_ROUTES.confirm}?next=${confirmNext}`,
         },
       });
@@ -61,6 +69,21 @@ export function SignUpForm() {
   return (
     <form onSubmit={handleSignUp} className="space-y-5">
       <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="name">Name</Label>
+          <Input
+            id="name"
+            type="text"
+            autoComplete="name"
+            placeholder="Your name"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            disabled={isLoading}
+            className="h-11"
+          />
+        </div>
+
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input

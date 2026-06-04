@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { getAuthenticatedClient } from "@/lib/auth/context";
-import { getDisplayName } from "@/lib/display-name";
 import {
   canAccessSection,
   canManageSection,
@@ -102,7 +101,11 @@ async function assertAssigneeInWorkspace(
   }
 }
 
-export async function createSection(title: string, color?: string) {
+export async function createSection(
+  title: string,
+  color?: string,
+  priority = false,
+) {
   const trimmed = title.trim();
   if (!trimmed) {
     throw new Error("Section title is required");
@@ -236,6 +239,30 @@ export async function setSectionLocked(id: string, locked: boolean) {
   const { error } = await supabase
     .from("sections")
     .update({ locked })
+    .eq("id", id)
+    .eq("workspace_id", ctx.workspaceId);
+
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/");
+}
+
+export async function setSectionPriority(id: string, priority: boolean) {
+  const { supabase, ctx } = await getAuthenticatedClient();
+  const section = await getSectionForPermission(
+    supabase,
+    id,
+    ctx.workspaceId,
+    ctx,
+  );
+
+  if (!canManageSection(section, ctx)) {
+    throw new Error("You cannot manage this section");
+  }
+
+  const { error } = await supabase
+    .from("sections")
+    .update({ priority })
     .eq("id", id)
     .eq("workspace_id", ctx.workspaceId);
 
@@ -416,7 +443,7 @@ export async function toggleTask(id: string, completed: boolean) {
     throw new Error("Only the assignee or admin can complete this task");
   }
 
-  const displayName = getDisplayName(ctx.email);
+  const completedBy = ctx.isAdmin ? "Admin" : ctx.displayName;
 
   const { error } = await supabase
     .from("tasks")
@@ -425,7 +452,7 @@ export async function toggleTask(id: string, completed: boolean) {
         ? {
             completed: true,
             completed_at: new Date().toISOString(),
-            completed_by: displayName,
+            completed_by: completedBy,
           }
         : {
             completed: false,

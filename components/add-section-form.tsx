@@ -11,6 +11,7 @@ import {
   getDefaultBookmarkColor,
   type BookmarkColorId,
 } from "@/lib/section-bookmarks";
+import { SectionPriorityStar } from "@/components/section-priority-star";
 import { cn } from "@/lib/utils";
 import { ArrowRight, Loader2 } from "lucide-react";
 
@@ -31,6 +32,7 @@ export function AddSectionForm({
 }: AddSectionFormProps) {
   const router = useRouter();
   const [title, setTitle] = useState("");
+  const [priority, setPriority] = useState(false);
   const [color, setColor] = useState<BookmarkColorId>("rose");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -51,8 +53,9 @@ export function AddSectionForm({
 
     startTransition(async () => {
       try {
-        await createSection(title, color);
+        await createSection(title, color, priority);
         setTitle("");
+        setPriority(false);
         router.refresh();
         onCreated?.();
       } catch (err) {
@@ -83,6 +86,12 @@ export function AddSectionForm({
             disabled={isPending}
             autoFocus={autoFocus}
             className="h-10 min-w-0 flex-1 border-0 bg-transparent px-0 shadow-none focus-visible:ring-0"
+          />
+          <SectionPriorityStar
+            priority={priority}
+            onToggle={() => setPriority((p) => !p)}
+            disabled={isPending}
+            className="h-10 w-10"
           />
           <Button
             type="submit"

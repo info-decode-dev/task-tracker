@@ -22,6 +22,13 @@ export type TeamMember = Pick<
   "id" | "email" | "display_name" | "role" | "created_at"
 >;
 
+export type WorkspaceNiche = {
+  id: string;
+  message: string;
+  position: number;
+  created_at: string;
+};
+
 export type WorkspaceClientProps = {
   permissions: {
     userId: string;

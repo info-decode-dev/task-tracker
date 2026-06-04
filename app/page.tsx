@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { getAuthContext } from "@/lib/auth/context";
 import { HomeWorkspace } from "@/components/home-workspace";
-import type { SectionWithTasks } from "@/lib/types";
+import { sortSectionsByPriority } from "@/lib/sort-sections";
+import type { SectionWithTasks, WorkspaceNiche } from "@/lib/types";
 import { hasEnvVars } from "@/lib/utils";
 
 export default async function HomePage() {
@@ -20,8 +21,10 @@ export default async function HomePage() {
   }
 
   let permissions;
+  let workspaceId: string;
   try {
     const ctx = await getAuthContext();
+    workspaceId = ctx.workspaceId;
     permissions = {
       userId: ctx.userId,
       role: ctx.role,
@@ -46,6 +49,7 @@ export default async function HomePage() {
   const [
     { data: sections, error: sectionsError },
     { data: assignees, error: assigneesError },
+    { data: niches, error: nichesError },
     teamMembers,
   ] = await Promise.all([
     supabase
@@ -57,6 +61,11 @@ export default async function HomePage() {
       .from("assignees")
       .select("id, name, linked_user_id")
       .order("name"),
+    supabase
+      .from("workspace_niches")
+      .select("id, message, position, created_at")
+      .eq("workspace_id", workspaceId)
+      .order("position", { ascending: true }),
     permissions.canViewTeam
       ? supabase
           .from("profiles")
@@ -67,7 +76,7 @@ export default async function HomePage() {
       : Promise.resolve([]),
   ]);
 
-  const error = sectionsError ?? assigneesError;
+  const error = sectionsError ?? assigneesError ?? nichesError;
 
   if (error) {
     return (
@@ -81,13 +90,16 @@ export default async function HomePage() {
     );
   }
 
-  const sortedSections = (sections ?? []) as SectionWithTasks[];
+  const sortedSections = sortSectionsByPriority(
+    (sections ?? []) as SectionWithTasks[],
+  );
 
   return (
     <HomeWorkspace
       sections={sortedSections}
       assignees={assignees ?? []}
       teamMembers={teamMembers}
+      niches={(niches ?? []) as WorkspaceNiche[]}
       permissions={permissions}
     />
   );

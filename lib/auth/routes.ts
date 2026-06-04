@@ -5,6 +5,7 @@ export const AUTH_ROUTES = {
   confirm: "/auth/confirm",
   error: "/auth/error",
   home: "/",
+  profile: "/profile",
 } as const;
 
 export const PUBLIC_AUTH_PREFIXES = [

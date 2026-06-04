@@ -13,7 +13,7 @@ import type {
   WorkspaceClientProps,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Calendar, Loader2, Plus, User, UserPlus } from "lucide-react";
+import { Calendar, ChevronDown, Loader2, Plus, User, UserPlus } from "lucide-react";
 
 type AddTaskFormProps = {
   sectionId: string;
@@ -64,6 +64,7 @@ export function AddTaskForm({
   const [newAssigneeName, setNewAssigneeName] = useState("");
   const [linkMemberId, setLinkMemberId] = useState("");
   const [showAssigneeAdd, setShowAssigneeAdd] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const canAddAssignees = permissions.canManageAssignees;
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -102,6 +103,7 @@ export function AddTaskForm({
         setAssigneeId("");
         setShowAssigneeAdd(false);
         setNewAssigneeName("");
+        setExpanded(false);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to create task");
       }
@@ -129,10 +131,39 @@ export function AddTaskForm({
     });
   };
 
+  const hasDetails = Boolean(deadline || assigneeId);
+
   return (
-    <form onSubmit={handleSubmit} className="w-full space-y-3">
-      <div className="rounded-xl border border-border/60 bg-background shadow-sm">
-        <div className="border-b border-border/40 px-3 py-2.5 sm:px-4">
+    <form onSubmit={handleSubmit} className="w-full max-w-none">
+      <button
+        type="button"
+        onClick={() => setExpanded((open) => !open)}
+        className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-colors hover:bg-muted/30 sm:px-5"
+        aria-expanded={expanded}
+      >
+        <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          New task
+        </span>
+        <span className="flex items-center gap-2">
+          {!expanded && hasDetails ? (
+            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+              details set
+            </span>
+          ) : null}
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 text-muted-foreground transition-transform",
+              expanded && "rotate-180",
+            )}
+            aria-hidden
+          />
+        </span>
+      </button>
+
+      {expanded ? (
+      <div className="space-y-3 border-t border-border/40 pb-4">
+      <div className="w-full border-b border-border/60 bg-background shadow-sm">
+        <div className="border-b border-border/40 px-4 py-2.5 sm:px-5">
           <FieldLabel htmlFor={`title-${sectionId}`}>Task</FieldLabel>
           <Input
             id={`title-${sectionId}`}
@@ -144,7 +175,7 @@ export function AddTaskForm({
           />
         </div>
 
-        <div className="grid gap-3 p-3 sm:grid-cols-2 sm:p-4">
+        <div className="grid w-full gap-3 p-4 sm:grid-cols-2 sm:p-5">
           <div
             className={cn(
               "rounded-lg border p-3 transition-colors",
@@ -272,14 +303,16 @@ export function AddTaskForm({
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-[11px] text-muted-foreground">
-          {!deadline ? "Select a deadline to enable Add" : null}
-        </p>
+      <div className="flex w-full flex-col gap-2 px-4 sm:px-5">
+        {!deadline ? (
+          <p className="text-[11px] text-muted-foreground">
+            Select a deadline to enable Add
+          </p>
+        ) : null}
         <Button
           type="submit"
           size="sm"
-          className="h-9 shrink-0 gap-1.5 px-4"
+          className="h-10 w-full gap-1.5"
           disabled={isPending || !canSubmit}
         >
           {isPending ? (
@@ -293,7 +326,11 @@ export function AddTaskForm({
         </Button>
       </div>
 
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+      {error ? (
+        <p className="px-4 text-sm text-destructive sm:px-5">{error}</p>
+      ) : null}
+      </div>
+      ) : null}
     </form>
   );
 }

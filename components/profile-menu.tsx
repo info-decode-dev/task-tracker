@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { AUTH_ROUTES } from "@/lib/auth/routes";
@@ -96,6 +97,15 @@ export function ProfileMenu({ role }: { role?: "admin" | "member" }) {
               </p>
             ) : null}
           </div>
+          <Link
+            href={AUTH_ROUTES.profile}
+            role="menuitem"
+            onClick={() => setOpen(false)}
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-muted"
+          >
+            <User className="h-4 w-4 shrink-0" aria-hidden />
+            Profile
+          </Link>
           <button
             type="button"
             role="menuitem"

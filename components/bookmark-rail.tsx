@@ -16,6 +16,7 @@ type BookmarkRailProps = {
   onSelect: (id: string | null) => void;
   onAddClick: () => void;
   chromeHidden?: boolean;
+  hasNicheBanner?: boolean;
 };
 
 export function BookmarkRail({
@@ -25,6 +26,7 @@ export function BookmarkRail({
   onSelect,
   onAddClick,
   chromeHidden = false,
+  hasNicheBanner = false,
 }: BookmarkRailProps) {
   const [railEngaged, setRailEngaged] = useState(false);
   const dimBookmarks = !railEngaged;
@@ -38,7 +40,10 @@ export function BookmarkRail({
   return (
     <aside
       className={cn(
-        "pointer-events-none fixed -right-0.5 top-14 z-40 flex h-[calc(100svh-3.5rem)] w-5 sm:-right-1 sm:w-6",
+        "pointer-events-none fixed -right-0.5 z-40 flex w-5 sm:-right-1 sm:w-6",
+        hasNicheBanner
+          ? "top-[calc(3.5rem+2.75rem)] h-[calc(100svh-3.5rem-2.75rem)]"
+          : "top-14 h-[calc(100svh-3.5rem)]",
         "transition-transform duration-300 ease-in-out motion-reduce:transition-none",
         chromeHidden && "translate-x-full pointer-events-none",
       )}

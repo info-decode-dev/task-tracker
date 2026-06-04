@@ -1,16 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import {
-  Briefcase,
-  Coffee,
-  Heart,
-  Home,
-  Lightbulb,
-  Music,
-  Palette,
-  Plane,
-  Star,
-  Zap,
-} from "lucide-react";
+import { Bookmark } from "lucide-react";
 
 export type BookmarkColorId =
   | "rose"
@@ -42,7 +31,7 @@ export const BOOKMARK_STYLES: BookmarkStyle[] = [
     border: "border-rose-600",
     text: "text-rose-950",
     swatch: "bg-rose-500",
-    icon: Heart,
+    icon: Bookmark,
   },
   {
     id: "amber",
@@ -51,7 +40,7 @@ export const BOOKMARK_STYLES: BookmarkStyle[] = [
     border: "border-amber-500",
     text: "text-amber-950",
     swatch: "bg-amber-400",
-    icon: Star,
+    icon: Bookmark,
   },
   {
     id: "sky",
@@ -60,7 +49,7 @@ export const BOOKMARK_STYLES: BookmarkStyle[] = [
     border: "border-sky-600",
     text: "text-sky-950",
     swatch: "bg-sky-500",
-    icon: Plane,
+    icon: Bookmark,
   },
   {
     id: "emerald",
@@ -69,7 +58,7 @@ export const BOOKMARK_STYLES: BookmarkStyle[] = [
     border: "border-emerald-600",
     text: "text-emerald-950",
     swatch: "bg-emerald-500",
-    icon: Home,
+    icon: Bookmark,
   },
   {
     id: "violet",
@@ -78,7 +67,7 @@ export const BOOKMARK_STYLES: BookmarkStyle[] = [
     border: "border-violet-600",
     text: "text-violet-950",
     swatch: "bg-violet-500",
-    icon: Palette,
+    icon: Bookmark,
   },
   {
     id: "fuchsia",
@@ -87,7 +76,7 @@ export const BOOKMARK_STYLES: BookmarkStyle[] = [
     border: "border-fuchsia-600",
     text: "text-fuchsia-950",
     swatch: "bg-fuchsia-500",
-    icon: Music,
+    icon: Bookmark,
   },
   {
     id: "orange",
@@ -96,7 +85,7 @@ export const BOOKMARK_STYLES: BookmarkStyle[] = [
     border: "border-orange-600",
     text: "text-orange-950",
     swatch: "bg-orange-500",
-    icon: Zap,
+    icon: Bookmark,
   },
   {
     id: "cyan",
@@ -105,7 +94,7 @@ export const BOOKMARK_STYLES: BookmarkStyle[] = [
     border: "border-cyan-600",
     text: "text-cyan-950",
     swatch: "bg-cyan-500",
-    icon: Lightbulb,
+    icon: Bookmark,
   },
   {
     id: "indigo",
@@ -114,7 +103,7 @@ export const BOOKMARK_STYLES: BookmarkStyle[] = [
     border: "border-indigo-600",
     text: "text-indigo-950",
     swatch: "bg-indigo-500",
-    icon: Briefcase,
+    icon: Bookmark,
   },
   {
     id: "lime",
@@ -123,7 +112,7 @@ export const BOOKMARK_STYLES: BookmarkStyle[] = [
     border: "border-lime-600",
     text: "text-lime-950",
     swatch: "bg-lime-500",
-    icon: Coffee,
+    icon: Bookmark,
   },
 ];
 

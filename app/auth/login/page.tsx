@@ -5,6 +5,7 @@ import { LoginForm } from "@/components/login-form";
 export default function LoginPage() {
   return (
     <AuthShell
+      showWedvueBadge
       title="Welcome back"
       description="Sign in to manage your tasks and sections."
     >

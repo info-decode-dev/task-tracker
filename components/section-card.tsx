@@ -40,12 +40,14 @@ export function SectionCard({
   assignees,
   permissions,
   teamMembers,
+  onClose,
 }: {
   section: SectionWithTasks;
   allSections: SectionWithTasks[];
   assignees: AssigneeOption[];
   permissions: WorkspaceClientProps["permissions"];
   teamMembers: TeamMember[];
+  onClose?: () => void;
 }) {
   const canManage = canManageSection(section, permissions);
   const canLock = canLockSection(permissions);
@@ -157,7 +159,18 @@ export function SectionCard({
           </div>
         ) : (
           <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 flex-1">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={!onClose}
+              title={onClose ? "Close section" : undefined}
+              className={cn(
+                "min-w-0 flex-1 rounded-lg text-left transition-colors",
+                onClose &&
+                  "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                !onClose && "cursor-default",
+              )}
+            >
               <h1 className="truncate text-xl font-semibold tracking-tight">
                 {section.title}
               </h1>
@@ -176,7 +189,7 @@ export function SectionCard({
                   View only — admin section
                 </p>
               ) : null}
-            </div>
+            </button>
 
             <div className="flex shrink-0 items-center gap-0.5">
             {canLock ? (
@@ -323,10 +336,7 @@ export function SectionCard({
       </div>
 
       {canManage ? (
-      <footer className="border-t border-border/50 bg-muted/15 px-4 py-4 sm:px-5">
-        <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          New task
-        </p>
+      <footer className="w-full border-t border-border/50 bg-muted/15">
         <AddTaskForm
           sectionId={section.id}
           assignees={assignees}
