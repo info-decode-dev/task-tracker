@@ -27,6 +27,7 @@ export function PasswordInput({
       />
       <button
         type="button"
+        suppressHydrationWarning
         onClick={() => setVisible((current) => !current)}
         disabled={disabled}
         aria-label={visible ? "Hide password" : "Show password"}

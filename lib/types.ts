@@ -1,8 +1,33 @@
 import type { Database } from "@/lib/database.types";
 
+export type UserRole = "admin" | "member";
+
+export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 export type Section = Database["public"]["Tables"]["sections"]["Row"];
 export type Task = Database["public"]["Tables"]["tasks"]["Row"];
+export type Assignee = Database["public"]["Tables"]["assignees"]["Row"];
+
+export type AssigneeOption = Pick<Assignee, "id" | "name" | "linked_user_id">;
+
+export type TaskWithAssignee = Task & {
+  assignee: Pick<Assignee, "id" | "name" | "linked_user_id"> | null;
+};
 
 export type SectionWithTasks = Section & {
-  tasks: Task[];
+  tasks: TaskWithAssignee[];
+};
+
+export type TeamMember = Pick<
+  Profile,
+  "id" | "email" | "display_name" | "role" | "created_at"
+>;
+
+export type WorkspaceClientProps = {
+  permissions: {
+    userId: string;
+    role: UserRole;
+    isAdmin: boolean;
+    canManageAssignees: boolean;
+    canViewTeam: boolean;
+  };
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -13,7 +13,6 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 
 export function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const nextPath = sanitizeNextPath(searchParams.get("next"));
 
@@ -29,13 +28,20 @@ export function LoginForm() {
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       if (error) throw error;
-      router.push(nextPath);
-      router.refresh();
+
+      if (!data.session) {
+        throw new Error(
+          "Signed in but no session was stored. Check that cookies are enabled for localhost.",
+        );
+      }
+
+      // Full navigation ensures auth cookies are sent on the next request.
+      window.location.assign(nextPath);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {

@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { LogoutButton } from "@/components/logout-button";
-import { AddSectionForm } from "@/components/add-section-form";
-import { SectionCard } from "@/components/section-card";
+import { getAuthContext } from "@/lib/auth/context";
+import { HomeWorkspace } from "@/components/home-workspace";
 import type { SectionWithTasks } from "@/lib/types";
 import { hasEnvVars } from "@/lib/utils";
 
@@ -13,8 +12,30 @@ export default async function HomePage() {
         <p className="text-muted-foreground">
           Copy <code className="rounded bg-muted px-1">.env.example</code> to{" "}
           <code className="rounded bg-muted px-1">.env.local</code> and add your
-          Supabase project URL and publishable key, then run the SQL migration
-          in <code className="rounded bg-muted px-1">supabase/migrations/001_sections_tasks.sql</code>.
+          Supabase project URL and publishable key, then run the SQL migrations
+          in <code className="rounded bg-muted px-1">supabase/migrations/</code>.
+        </p>
+      </main>
+    );
+  }
+
+  let permissions;
+  try {
+    const ctx = await getAuthContext();
+    permissions = {
+      userId: ctx.userId,
+      role: ctx.role,
+      isAdmin: ctx.isAdmin,
+      canManageAssignees: ctx.isAdmin,
+      canViewTeam: ctx.isAdmin,
+    };
+  } catch (err) {
+    return (
+      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-6 md:p-10">
+        <p className="text-destructive">
+          {err instanceof Error
+            ? err.message
+            : "Failed to load your profile. Run migration 004_roles_team.sql in Supabase."}
         </p>
       </main>
     );
@@ -22,18 +43,39 @@ export default async function HomePage() {
 
   const supabase = await createClient();
 
-  const { data: sections, error } = await supabase
-    .from("sections")
-    .select("*, tasks(*)")
-    .order("position", { ascending: true })
-    .order("position", { ascending: true, referencedTable: "tasks" });
+  const [
+    { data: sections, error: sectionsError },
+    { data: assignees, error: assigneesError },
+    teamMembers,
+  ] = await Promise.all([
+    supabase
+      .from("sections")
+      .select("*, tasks(*, assignee:assignees(id, name, linked_user_id))")
+      .order("position", { ascending: true })
+      .order("position", { ascending: true, referencedTable: "tasks" }),
+    supabase
+      .from("assignees")
+      .select("id, name, linked_user_id")
+      .order("name"),
+    permissions.canViewTeam
+      ? supabase
+          .from("profiles")
+          .select("id, email, display_name, role, created_at")
+          .eq("admin_id", permissions.userId)
+          .order("created_at", { ascending: true })
+          .then((r) => r.data ?? [])
+      : Promise.resolve([]),
+  ]);
+
+  const error = sectionsError ?? assigneesError;
 
   if (error) {
     return (
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-6 md:p-10">
         <p className="text-destructive">
-          Failed to load sections. Make sure you have run the database migration
-          in Supabase.
+          Failed to load workspace. Run all SQL files in{" "}
+          <code className="rounded bg-muted px-1">supabase/migrations/</code>{" "}
+          in the Supabase SQL editor.
         </p>
       </main>
     );
@@ -42,32 +84,11 @@ export default async function HomePage() {
   const sortedSections = (sections ?? []) as SectionWithTasks[];
 
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 p-6 md:p-10">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Task Tracker</h1>
-          <p className="text-muted-foreground">
-            Organize tasks by section and track completion.
-          </p>
-        </div>
-        <LogoutButton />
-      </header>
-
-      <AddSectionForm />
-
-      {sortedSections.length === 0 ? (
-        <div className="rounded-xl border border-dashed p-10 text-center">
-          <p className="text-muted-foreground">
-            No sections yet. Create your first section above.
-          </p>
-        </div>
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2">
-          {sortedSections.map((section) => (
-            <SectionCard key={section.id} section={section} />
-          ))}
-        </div>
-      )}
-    </main>
+    <HomeWorkspace
+      sections={sortedSections}
+      assignees={assignees ?? []}
+      teamMembers={teamMembers}
+      permissions={permissions}
+    />
   );
 }

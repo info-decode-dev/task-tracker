@@ -33,7 +33,7 @@ export async function updateSession(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet, headers) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value),
           );
@@ -43,13 +43,30 @@ export async function updateSession(request: NextRequest) {
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options),
           );
+          Object.entries(headers).forEach(([key, value]) =>
+            supabaseResponse.headers.set(key, value),
+          );
         },
       },
     },
   );
 
-  const { data } = await supabase.auth.getClaims();
-  const user = data?.claims;
+  // Do not run code between createServerClient and getUser.
+  let user = null;
+  try {
+    const { data, error } = await supabase.auth.getUser();
+    if (!error) {
+      user = data.user;
+    }
+  } catch (cause) {
+    if (process.env.NODE_ENV === "development") {
+      console.error(
+        "[auth proxy] Could not reach Supabase. Restart with `npm run dev` " +
+          "(sets NODE_TLS_REJECT_UNAUTHORIZED for local TLS issues).",
+        cause,
+      );
+    }
+  }
 
   if (!user && !isPublicAuthPath(pathname)) {
     const url = request.nextUrl.clone();
