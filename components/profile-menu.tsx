@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { AUTH_ROUTES } from "@/lib/auth/routes";
+import { APP_ROUTES } from "@/lib/app-nav";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { LogOut, User } from "lucide-react";
@@ -98,7 +99,7 @@ export function ProfileMenu({ role }: { role?: "admin" | "member" }) {
             ) : null}
           </div>
           <Link
-            href={AUTH_ROUTES.profile}
+            href={APP_ROUTES.settings}
             role="menuitem"
             onClick={() => setOpen(false)}
             className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-muted"

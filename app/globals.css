@@ -104,6 +104,38 @@ body {
   display: none;
 }
 
+.app-bottom-offset {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@keyframes timeline-connector-flow {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 10px;
+  }
+}
+
+.timeline-connector {
+  width: 1px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    hsl(var(--muted-foreground) / 0.45) 0,
+    hsl(var(--muted-foreground) / 0.45) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  background-size: 1px 8px;
+  animation: timeline-connector-flow 1.4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline-connector {
+    animation: none;
+  }
+}
+
 @keyframes priority-shine {
   to {
     background-position: 200% center;

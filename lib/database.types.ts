@@ -63,6 +63,45 @@ export interface Database {
         };
         Relationships: [];
       };
+      timeline_items: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          user_id: string;
+          title: string;
+          scheduled_at: string;
+          description: string | null;
+          status: "hold" | "progress" | "complete";
+          position: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          user_id: string;
+          title: string;
+          scheduled_at: string;
+          description?: string | null;
+          status?: "hold" | "progress" | "complete";
+          position?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          user_id?: string;
+          title?: string;
+          scheduled_at?: string;
+          description?: string | null;
+          status?: "hold" | "progress" | "complete";
+          position?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       workspace_niches: {
         Row: {
           id: string;
@@ -179,6 +218,7 @@ export interface Database {
     Functions: Record<string, never>;
     Enums: {
       user_role: "admin" | "member";
+      timeline_status: "hold" | "progress" | "complete";
     };
     CompositeTypes: Record<string, never>;
   };

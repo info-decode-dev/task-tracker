@@ -34,7 +34,7 @@ export async function createWorkspaceNiche(message: string) {
   if (error) throw new Error(error.message);
 
   revalidatePath("/");
-  revalidatePath("/profile");
+  revalidatePath("/settings");
 }
 
 export async function deleteWorkspaceNiche(id: string) {
@@ -53,5 +53,5 @@ export async function deleteWorkspaceNiche(id: string) {
   if (error) throw new Error(error.message);
 
   revalidatePath("/");
-  revalidatePath("/profile");
+  revalidatePath("/settings");
 }

@@ -22,6 +22,28 @@ export type TeamMember = Pick<
   "id" | "email" | "display_name" | "role" | "created_at"
 >;
 
+export type TimelineStatus = "hold" | "progress" | "complete";
+
+export type TimelineItem = {
+  id: string;
+  workspace_id: string;
+  user_id: string;
+  title: string;
+  scheduled_at: string;
+  description: string | null;
+  status: TimelineStatus;
+  position: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type TimelineMember = {
+  id: string;
+  email: string;
+  display_name: string | null;
+  role: UserRole;
+};
+
 export type WorkspaceNiche = {
   id: string;
   message: string;

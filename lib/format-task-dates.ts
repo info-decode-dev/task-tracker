@@ -59,6 +59,14 @@ export function getRemainingDaysLabel(
   return `${days} days left`;
 }
 
+export function isDeadlineToday(deadline: string | null | undefined): boolean {
+  if (!deadline) return false;
+  const today = startOfDay(new Date());
+  const due = parseDate(deadline);
+  if (!due) return false;
+  return startOfDay(due).getTime() === today.getTime();
+}
+
 export function isDeadlineOverdue(
   deadline: string | null | undefined,
   completed: boolean,

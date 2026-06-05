@@ -21,12 +21,13 @@ import type {
 import { useScrollChrome } from "@/lib/use-scroll-chrome";
 import { cn } from "@/lib/utils";
 
-type HomeWorkspaceProps = {
+export type HomeWorkspaceProps = {
   sections: SectionWithTasks[];
   assignees: AssigneeOption[];
   teamMembers: TeamMember[];
   niches: WorkspaceNiche[];
   permissions: WorkspaceClientProps["permissions"];
+  initialSectionId?: string | null;
 };
 
 export function HomeWorkspace({
@@ -35,15 +36,23 @@ export function HomeWorkspace({
   teamMembers,
   niches,
   permissions,
+  initialSectionId = null,
 }: HomeWorkspaceProps) {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [addSectionOpen, setAddSectionOpen] = useState(false);
-  const chromeHidden = useScrollChrome();
-
   const permissionCtx = useMemo(
     () => ({ ...permissions, userId: permissions.userId }),
     [permissions],
   );
+
+  const [selectedId, setSelectedId] = useState<string | null>(() => {
+    if (!initialSectionId) return null;
+    const section = sections.find((s) => s.id === initialSectionId);
+    if (section && canAccessSection(section, permissionCtx)) {
+      return initialSectionId;
+    }
+    return null;
+  });
+  const [addSectionOpen, setAddSectionOpen] = useState(false);
+  const chromeHidden = useScrollChrome();
 
   const selectedSection = useMemo(() => {
     if (!selectedId) return null;
@@ -75,7 +84,7 @@ export function HomeWorkspace({
       <div className="relative min-h-0 flex-1">
         <main
           className={cn(
-            "notebook-page mx-auto flex h-full w-full max-w-3xl flex-col px-4 pb-24 sm:px-8 sm:pb-10",
+            "notebook-page mx-auto flex h-full w-full max-w-3xl flex-col px-4 sm:px-8",
             hasNiches
               ? "pt-[calc(3.5rem+2.75rem+2rem)] sm:pt-[calc(3.5rem+2.75rem+2.5rem)]"
               : "pt-[calc(3.5rem+2rem)] sm:pt-[calc(3.5rem+2.5rem)]",

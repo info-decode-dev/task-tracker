@@ -1,6 +1,7 @@
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthContext } from "@/lib/auth/context";
-import { HomeWorkspace } from "@/components/home-workspace";
+import { HomeWorkspaceLoader } from "@/components/home-workspace-loader";
 import { sortSectionsByPriority } from "@/lib/sort-sections";
 import type { SectionWithTasks, WorkspaceNiche } from "@/lib/types";
 import { hasEnvVars } from "@/lib/utils";
@@ -95,12 +96,14 @@ export default async function HomePage() {
   );
 
   return (
-    <HomeWorkspace
-      sections={sortedSections}
-      assignees={assignees ?? []}
-      teamMembers={teamMembers}
-      niches={(niches ?? []) as WorkspaceNiche[]}
-      permissions={permissions}
-    />
+    <Suspense fallback={null}>
+      <HomeWorkspaceLoader
+        sections={sortedSections}
+        assignees={assignees ?? []}
+        teamMembers={teamMembers}
+        niches={(niches ?? []) as WorkspaceNiche[]}
+        permissions={permissions}
+      />
+    </Suspense>
   );
 }

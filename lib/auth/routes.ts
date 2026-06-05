@@ -6,6 +6,7 @@ export const AUTH_ROUTES = {
   error: "/auth/error",
   home: "/",
   profile: "/profile",
+  settings: "/settings",
 } as const;
 
 export const PUBLIC_AUTH_PREFIXES = [
